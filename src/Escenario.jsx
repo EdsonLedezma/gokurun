@@ -4,7 +4,7 @@ import Cell from './Cell';
 import Roca from './Roca'; 
 
 const Escenario = ({ children }) => {
-  const [obstaclePosition, setObstaclePosition] = useState(-300); 
+  const [obstaclePosition, setObstaclePosition] = useState(300); 
   const [obstacleType, setObstacleType] = useState('cell'); 
 
   useEffect(() => {

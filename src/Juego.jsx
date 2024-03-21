@@ -7,7 +7,7 @@ import Cell from './Cell';
 const Juego = () => {
   const [isJumping, setIsJumping] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
-
+  
   const jump = () => {
     if (!isJumping) {
       setIsJumping(true);
@@ -25,8 +25,9 @@ const Juego = () => {
         <div>¡Game Over!</div>
       ) : (
         <>
-          <Goku isJumping={isJumping} handleCollision={handleCollision} />
+          
           <Escenario>
+          <Goku isJumping={isJumping} handleCollision={handleCollision} />
             <Roca handleCollision={handleCollision} />
             <Cell handleCollision={handleCollision} />
           </Escenario>

@@ -7,14 +7,14 @@ const Goku = ({ isJumping, handleCollision }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentFrame(frame => (frame === 8 ? 1 : frame + 1)); // Ciclo de 1 a 8
-    }, 150); // Cambiar el fotograma cada 150ms
+    }, 50); // Cambiar el fotograma cada 150ms
 
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     if (isJumping) {
-      setJumpHeight(50); // Altura máxima del salto
+      setJumpHeight(60); // Altura máxima del salto
       const jumpInterval = setInterval(() => {
         setJumpHeight(prevHeight => {
           if (prevHeight > 0) {
@@ -24,7 +24,7 @@ const Goku = ({ isJumping, handleCollision }) => {
             return 0;
           }
         });
-      }, 50); // Velocidad de ascenso y descenso durante el salto
+      }, 60); // Velocidad de ascenso y descenso durante el salto
     }
   }, [isJumping]);
 

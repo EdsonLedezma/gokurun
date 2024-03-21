@@ -1,30 +1,31 @@
 .escenario {
-    position: relative;
-    width: 100%;
-    height: 300px; /* Altura del escenario */
-    background-image: url('escenario.png'); /* Imagen de fondo del escenario */
-    background-size: cover;
-    animation: moveBackground 5s linear infinite; /* Animación de movimiento del escenario */
-  }
-  
-  @keyframes moveBackground {
-    0% { background-position: 100% 0; }
-    100% { background-position: 0 0; }
-  }
-  
+  position: relative;
+  width: 100%;
+  height: 867px; /* Altura del escenario */
+  overflow: hidden; /* Oculta las partes del fondo que se cortan */
+  background-image: url('escenario.png'); 
+  background-size: auto 100%; /* Ajusta la imagen de fondo para que cubra toda la altura del escenario */
+  animation: moveBackground 5s linear infinite; /* Ajusta la velocidad de desplazamiento según sea necesario */
+}
+
+@keyframes moveBackground {
+  0% { background-position: 0 0; }
+  100% { background-position: -2000px 0; } /* Ajusta la cantidad de desplazamiento según sea necesario */
+}
+
   .obstacle {
     position: absolute;
-    width: 50px; /* Ancho del obstáculo */
-    height: 50px; /* Altura del obstáculo */
+    width: 50px; 
+    height: 50px;
     background-size: cover;
-    left: calc(100% - 50px); /* Posición inicial fuera de la pantalla */
+    left: calc(100% - 50px);
   }
-  
+  /*
   .cell {
-    background-image: url('cell.png'); /* Imagen del obstáculo Cell */
+    background-image: url('cell.png');
   }
   
   .roca {
-    background-image: url('roca.png'); /* Imagen del obstáculo Roca */
+    background-image: url('roca.png'); 
   }
-  
+  */
