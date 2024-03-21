@@ -1,0 +1,30 @@
+.escenario {
+    position: relative;
+    width: 100%;
+    height: 300px; /* Altura del escenario */
+    background-image: url('escenario.png'); /* Imagen de fondo del escenario */
+    background-size: cover;
+    animation: moveBackground 5s linear infinite; /* Animación de movimiento del escenario */
+  }
+  
+  @keyframes moveBackground {
+    0% { background-position: 100% 0; }
+    100% { background-position: 0 0; }
+  }
+  
+  .obstacle {
+    position: absolute;
+    width: 50px; /* Ancho del obstáculo */
+    height: 50px; /* Altura del obstáculo */
+    background-size: cover;
+    left: calc(100% - 50px); /* Posición inicial fuera de la pantalla */
+  }
+  
+  .cell {
+    background-image: url('cell.png'); /* Imagen del obstáculo Cell */
+  }
+  
+  .roca {
+    background-image: url('roca.png'); /* Imagen del obstáculo Roca */
+  }
+  
