@@ -2,7 +2,7 @@ import React from 'react';
 
 const Roca = () => {
   return (
-    <div className="obstacle roca"></div>
+    <div className="obstacle roca" style={{ bottom: '140px' }}></div>
   );
 };
 

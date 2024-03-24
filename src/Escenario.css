@@ -20,12 +20,12 @@
     background-size: cover;
     left: calc(100% - 50px);
   }
-  /*
+  
   .cell {
-    background-image: url('cell.png');
+    background-image: url('escenario.png');
   }
   
   .roca {
-    background-image: url('roca.png'); 
+    background-image: url('escenario.png'); 
   }
-  */
+  

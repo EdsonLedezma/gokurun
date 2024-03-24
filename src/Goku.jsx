@@ -50,7 +50,7 @@ const Goku = ({ isJumping, handleCollision }) => {
   }, [handleCollision]);
 
   return (
-    <div className="goku" style={{ bottom: `${jumpHeight}px` }}>
+    <div className="goku" style={{ position: 'absolute', bottom: '270px', height: '140px', width: '140px', marginBottom: `${jumpHeight}px` }}>
       <img src={`goku_${isJumping ? 'jump' : 'run'}_${currentFrame}.png`} alt="Goku" />
     </div>
   );
