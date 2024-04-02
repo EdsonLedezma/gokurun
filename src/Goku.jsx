@@ -1,59 +1,60 @@
 import React, { useState, useEffect } from 'react';
 
-const Goku = ({ isJumping, handleCollision }) => {
+const Goku = () => {
+  const [isJumping, setIsJumping] = useState(false);
   const [currentFrame, setCurrentFrame] = useState(1);
   const [jumpHeight, setJumpHeight] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentFrame(frame => (frame === 8 ? 1 : frame + 1)); // Ciclo de 1 a 8
-    }, 50); // Cambiar el fotograma cada 150ms
+    const frameInterval = setInterval(() => {
+      if (isJumping) {
+        setCurrentFrame(frame => (frame === 8 ? 1 : frame + 1));
+      } else {
+        setCurrentFrame(frame => (frame === 8 ? 1 : frame + 1));
+      }
+    }, 150);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(frameInterval);
+  }, [isJumping]);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.code === "Space") {
+        setIsJumping(true);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   useEffect(() => {
     if (isJumping) {
-      setJumpHeight(60); // Altura máxima del salto
+      setJumpHeight(270);
       const jumpInterval = setInterval(() => {
         setJumpHeight(prevHeight => {
           if (prevHeight > 0) {
-            return prevHeight - 5; // Disminuir la altura del salto
+            return prevHeight - 5;
           } else {
             clearInterval(jumpInterval);
+            setIsJumping(false);
             return 0;
           }
         });
-      }, 60); // Velocidad de ascenso y descenso durante el salto
+      }, 20);
     }
   }, [isJumping]);
 
-  useEffect(() => {
-    const collisionCheckInterval = setInterval(() => {
-      // Detecta la colisión con los obstáculos
-      const gokuRect = document.querySelector('.goku').getBoundingClientRect();
-      const obstacleRects = document.querySelectorAll('.obstacle');
-
-      obstacleRects.forEach(obstacleRect => {
-        if (
-          gokuRect.right > obstacleRect.left &&
-          gokuRect.left < obstacleRect.right &&
-          gokuRect.bottom > obstacleRect.top &&
-          gokuRect.top < obstacleRect.bottom
-        ) {
-          handleCollision(); // Llama a la función de colisión si hay colisión
-        }
-      });
-    }, 50); // Verifica la colisión cada 50ms
-
-    return () => clearInterval(collisionCheckInterval);
-  }, [handleCollision]);
-
   return (
-    <div className="goku" style={{ position: 'absolute', bottom: '270px', height: '140px', width: '140px', marginBottom: `${jumpHeight}px` }}>
+    <div className="goku" style={{ position: 'absolute', bottom: `270px`, height: '140px', width: '140px', marginBottom: `${jumpHeight}px` }}>
       <img src={`goku_${isJumping ? 'jump' : 'run'}_${currentFrame}.png`} alt="Goku" />
     </div>
   );
 };
 
 export default Goku;
+
+

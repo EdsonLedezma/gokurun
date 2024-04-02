@@ -8,12 +8,7 @@ const Juego = () => {
   const [isJumping, setIsJumping] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   
-  const jump = () => {
-    if (!isJumping) {
-      setIsJumping(true);
-      setTimeout(() => setIsJumping(false), 1200); // Vuelve a correr después de 1.2 segundos
-    }
-  };
+ 
 
   const handleCollision = () => {
     setIsGameOver(true); // Cambia el estado de juego a Game Over

@@ -13,19 +13,24 @@
   100% { background-position: -2000px 0; } /* Ajusta la cantidad de desplazamiento según sea necesario */
 }
 
-  .obstacle {
-    position: absolute;
-    width: 50px; 
-    height: 50px;
-    background-size: cover;
-    left: calc(100% - 50px);
-  }
-  
-  .cell {
-    background-image: url('escenario.png');
-  }
-  
-  .roca {
-    background-image: url('escenario.png'); 
-  }
-  
+.obstacle {
+  position: absolute;
+  width: 80px; 
+  height: 150px;
+  background-size: cover;
+  left: calc(100% - 50px);
+  animation: moveObstacle 3s linear infinite; /* Animación para mover los obstáculos */
+}
+
+@keyframes moveObstacle {
+  0% { left: 100%; }
+  100% { left: -50px; } /* Ajusta la posición de destino de los obstáculos */
+}
+
+.cell {
+  background-image: url('escenario.png');
+}
+
+.roca {
+  background-image: url('escenario.png'); 
+}
