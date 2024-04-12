@@ -8,14 +8,39 @@ const Goku = () => {
   useEffect(() => {
     const frameInterval = setInterval(() => {
       if (isJumping) {
-        setCurrentFrame(frame => (frame === 8 ? 1 : frame + 1));
+        setCurrentFrame(frame => (frame === 8? 1 : frame + 1));
       } else {
-        setCurrentFrame(frame => (frame === 8 ? 1 : frame + 1));
+        setCurrentFrame(frame => (frame === 8? 1 : frame + 1));
       }
-    }, 150);
-
+    }, 150); 
+  
     return () => clearInterval(frameInterval);
   }, [isJumping]);
+  
+  useEffect(() => {
+    if (isJumping) {
+      setJumpHeight(270);
+      const jumpInterval = setInterval(() => {
+        setJumpHeight(prevHeight => {
+          if (prevHeight > 0) {
+            return prevHeight - 7;
+          } else {
+            clearInterval(jumpInterval);
+            setIsJumping(false);
+            return 0;
+          }
+        });
+      }, 10);
+    }
+  }, [isJumping]);
+  
+  useEffect(() => {
+    if (isJumping && currentFrame === 4) {
+      setTimeout(() => {
+        setCurrentFrame(4);
+      }, 1000); 
+    }
+  }, [currentFrame, isJumping]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -31,22 +56,7 @@ const Goku = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (isJumping) {
-      setJumpHeight(270);
-      const jumpInterval = setInterval(() => {
-        setJumpHeight(prevHeight => {
-          if (prevHeight > 0) {
-            return prevHeight - 5;
-          } else {
-            clearInterval(jumpInterval);
-            setIsJumping(false);
-            return 0;
-          }
-        });
-      }, 20);
-    }
-  }, [isJumping]);
+ 
 
   return (
     <div className="goku" style={{ position: 'absolute', bottom: `270px`, height: '140px', width: '140px', marginBottom: `${jumpHeight}px` }}>

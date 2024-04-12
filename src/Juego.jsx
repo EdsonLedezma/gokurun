@@ -1,32 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Escenario from './Escenario';
 import Goku from './Goku';
-import Roca from './Roca';
-import Cell from './Cell';
 
 const Juego = () => {
   const [isJumping, setIsJumping] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
-  
- 
 
   const handleCollision = () => {
-    setIsGameOver(true); // Cambia el estado de juego a Game Over
+    setIsGameOver(true);
   };
+
+  const restartGame = () => {
+    setIsGameOver(false);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (isGameOver && (event.code === 'Enter' || event.code === 'Return')) {
+        restartGame();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isGameOver]);
 
   return (
     <div className="juego">
       {isGameOver ? (
-        <div>¡Game Over!</div>
+        
+        <div style={{
+          position: 'fixed',
+          top: '50%',
+          textAlign: 'center',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          fontSize: '156px',
+          fontWeight: 'bold',
+          color: 'red'
+        }}><Escenario>¡Game Over!</Escenario></div>
+        
+        
       ) : (
-        <>
-          
-          <Escenario>
+        <Escenario handleCollision={handleCollision}>
           <Goku isJumping={isJumping} handleCollision={handleCollision} />
-            <Roca handleCollision={handleCollision} />
-            <Cell handleCollision={handleCollision} />
-          </Escenario>
-        </>
+        </Escenario>
       )}
     </div>
   );

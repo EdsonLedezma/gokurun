@@ -3,25 +3,81 @@ import './Escenario.css';
 import Cell from './Cell'; 
 import Roca from './Roca'; 
 
-const Escenario = ({ children }) => {
+const Escenario = ({ children, handleCollision }) => {
   const [obstaclePosition, setObstaclePosition] = useState(300); 
-  const [obstacleType, setObstacleType] = useState('cell'); 
-
+  const [obstacleType, setObstacleType] = useState('Roca'); 
+  const [timeElapsed, setTimeElapsed] = useState(0);
+  const [score, setScore] = useState(0);
+  const [animationSpeed, setAnimationSpeed] = useState(2);
   useEffect(() => {
     const interval = setInterval(() => {
-      const randomPosition = Math.floor(Math.random() * (window.innerHeight - 150));
+      const randomPosition = Math.floor(Math.random() * (window.innerHeight - 100));
       const newObstacleType = Math.random() < 0.5 ? 'roca' : 'cell';
       setObstaclePosition(randomPosition);
       setObstacleType(newObstacleType);
-    }, 2500); 
+    }, 3500); 
 
     return () => clearInterval(interval);
   }, []);
+  useEffect(() => {
+    const timerInterval = setInterval(() => {
+      setTimeElapsed(prevTime => prevTime + 1);
+      setScore(prevScore => prevScore + 5);
+    }, 1000);
 
+    return () => clearInterval(timerInterval);
+  }, []);
+  useEffect(() => {
+   
+    const timeout = setTimeout(() => {
+      setAnimationSpeed(1.6); 
+    }, 10000); 
+
+    return () => clearTimeout(timeout);
+  }, []);
+  useEffect(() => {
+   
+    const timeout = setTimeout(() => {
+      setAnimationSpeed(1.4); 
+    }, 20000); 
+
+    return () => clearTimeout(timeout);
+  }, []);
+  useEffect(() => {
+   
+    const timeout = setTimeout(() => {
+      setAnimationSpeed(1.2); 
+    }, 30000); 
+
+    return () => clearTimeout(timeout);
+  }, []);
+  useEffect(() => {
+   
+    const timeout = setTimeout(() => {
+      setAnimationSpeed(1); 
+    }, 40000); 
+
+    return () => clearTimeout(timeout);
+  }, []);
+  
   return (
     <div className="escenario">
-      {children}
-      {obstacleType === 'cell' ? <Cell /> : <Roca />}
+      
+       <div className="info" style={{ marginTop: '150px' }}>
+            <div >Tiempo: {timeElapsed} seg</div>
+            <div >Puntaje: {score}</div>
+          </div>
+         {children}<style>{`
+        .obstacle {
+          position: absolute;
+          width: 200px;
+          height: 150px;
+          background-size: cover;
+          left: calc(100% - 50px);
+          animation: moveObstacle ${animationSpeed}s linear infinite; 
+        }
+      `}</style>
+      {obstacleType === 'cell' ? <Cell handleCollision={handleCollision} /> : <Roca handleCollision={handleCollision} />}
     </div>
   );
 };

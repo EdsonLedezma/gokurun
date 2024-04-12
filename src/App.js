@@ -1,10 +1,12 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
-import  juego from './Juego';
 import Juego from './Juego';
+
 function App() {
   return (
-  <Juego></Juego>
+    
+      <Juego />
+    
   );
 }
 
