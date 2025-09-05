@@ -1,36 +1,186 @@
 .escenario {
   position: relative;
-  width: 100%;
-  height: 900px; /* Altura del escenario */
+  width: 100vw;
+  height: 100vh; /* Altura completa de la ventana */
   overflow: hidden; /* Oculta las partes del fondo que se cortan */
   background-image: url('escenario.png'); 
   background-size: auto 100%; /* Ajusta la imagen de fondo para que cubra toda la altura del escenario */
-  animation: moveBackground 5s linear infinite;/* Ajusta la velocidad de desplazamiento según sea necesario */
+  background-repeat: repeat-x; /* Repetir horizontalmente */
+  animation: moveBackground 10s linear infinite;/* Animación más lenta para evitar flasheo */
+  will-change: background-position; /* Optimización para GPU */
+  transform: translateZ(0); /* Forzar aceleración por hardware */
 }
+
+.escenario.game-over {
+  animation-play-state: running; /* Pausar animación cuando el juego termina */
+}
+
+/* Animación más suave del fondo */
 @keyframes moveBackground {
-  0% { background-position: 0 0; }
-  100% { background-position: -2400px 0; }/* Ajusta la cantidad de desplazamiento según sea necesario */
+  0% { 
+    background-position: 0 0; 
+  }
+  100% { 
+    background-position: -4800px 0; /* Doble de distancia para animación más suave */
+  }
 }
 @keyframes moveObstacle {
-  0% { left: 100%; }
-  100% { left: -800px; } /* Ajusta la posición de destino de los obstáculos */
+  0% { 
+    left: 100%; 
+    transform: translateZ(0); /* Optimización para GPU */
+  }
+  100% { 
+    left: -800px; /* Ajusta la posición de destino de los obstáculos */
+    transform: translateZ(0); /* Optimización para GPU */
+  }
 }
+.info {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
 .info div {
   font-family: 'Press Start 2P', cursive; 
-  font-size: 48px; 
+  font-size: 2.5vw; /* Tamaño responsivo */
   color: #ffffff; 
   text-shadow: 3px 3px 3px #000000; 
   letter-spacing: 1px; 
-  text-align: right ;
-  padding: 15px;
+  text-align: right;
+  padding: 10px;
+  margin-bottom: 5px;
 }
 
 .cell {
   background-image: url('cell.png');
-  
+  will-change: transform; /* Optimización para GPU */
+  transform: translateZ(0); /* Forzar aceleración por hardware */
 }
 
 .roca {
   background-image: url('frezeer.png'); 
   width: 200px;
+  will-change: transform; /* Optimización para GPU */
+  transform: translateZ(0); /* Forzar aceleración por hardware */
+}
+
+/* Estilos para Game Over */
+.game-over-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.game-over-content {
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 40px;
+  border-radius: 20px;
+  border: 3px solid #ff0000;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+}
+
+.game-over-text {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 4vw;
+  font-weight: bold;
+  color: #ff0000;
+  text-shadow: 3px 3px 0px #000000;
+  margin-bottom: 30px;
+  animation: gameOverPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes gameOverPulse {
+  from {
+    transform: scale(1);
+    text-shadow: 3px 3px 0px #000000;
+  }
+  to {
+    transform: scale(1.05);
+    text-shadow: 3px 3px 0px #000000, 0 0 20px #ff0000;
+  }
+}
+
+.restart-button {
+  display: block;
+  margin: 0 auto;
+  padding: 15px 30px;
+  border-radius: 25px;
+  background-color: #008000;
+  color: #ffff00;
+  font-size: 1.5vw;
+  text-transform: uppercase;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0px 5px 10px rgba(0,0,0,0.2);
+  transition: all 0.3s ease-in-out;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.restart-button:hover {
+  background-color: #00aa00;
+  transform: translateY(-2px);
+  box-shadow: 0px 7px 15px rgba(0,0,0,0.3);
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .info div {
+    font-size: 3vw;
+    padding: 5px;
+  }
+  
+  .goku {
+    height: 100px !important;
+    width: 100px !important;
+  }
+  
+  .obstacle {
+    width: 150px !important;
+    height: 120px !important;
+  }
+  
+  .game-over-text {
+    font-size: 6vw;
+  }
+  
+  .restart-button {
+    font-size: 2.5vw;
+    padding: 12px 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .info div {
+    font-size: 4vw;
+    padding: 3px;
+  }
+  
+  .goku {
+    height: 80px !important;
+    width: 80px !important;
+  }
+  
+  .obstacle {
+    width: 120px !important;
+    height: 100px !important;
+  }
+  
+  .game-over-text {
+    font-size: 8vw;
+  }
+  
+  .restart-button {
+    font-size: 3.5vw;
+    padding: 10px 20px;
+  }
 }

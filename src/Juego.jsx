@@ -10,6 +10,10 @@ const Juego = () => {
   const nombreJugador = location.state?.nombre || 'Anónimo';
   const [score, setScore] = useState(0);
 
+  const handleScoreUpdate = (newScore) => {
+    setScore(newScore);
+  };
+
   const handleCollision = () => {
     setIsGameOver(true);
   };
@@ -18,14 +22,7 @@ const Juego = () => {
     setIsGameOver(false);
     
   };
-  useEffect(() => {
-    const timerInterval = setInterval(() => {
-      
-      setScore(prevScore => prevScore + 5);
-    }, 1000);
-
-    return () => clearInterval(timerInterval);
-  }, []);
+  // El score ahora se maneja en el componente Escenario para evitar duplicación
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (isGameOver && (event.code === 'Enter' || event.code === 'Return')) {
@@ -65,50 +62,27 @@ const Juego = () => {
     }
   };
   
-  if(isGameOver){
-    
-    for (let i = 0; i < 1; i++) {
+  // Enviar record solo una vez cuando el juego termina
+  useEffect(() => {
+    if (isGameOver) {
       enviarRecord();
     }
-  }
+  }, [isGameOver]);
   return (
     <div className="juego">
-      {isGameOver ? (
-        <div style={{
-          position: 'fixed',
-          top: '50%',
-          textAlign: 'center',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          fontSize: '106px',
-          fontWeight: 'bold',
-          color: 'red'
-        }}>
-          <Escenario >
-            ¡Game Over!
-            <button style={{
-              display: 'block',
-              margin: '0 auto',
-              padding: '15px 30px',
-              borderRadius: '25px',
-              backgroundColor: '#008000',
-              color: '#ffff00',
-              fontSize: '24px',
-              textTransform: 'uppercase',
-              fontWeight: 'bold',
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '0px 5px 10px rgba(0,0,0,0.2)',
-              transition: 'all 0.3s ease-in-out'
-            }}>
+      <Escenario handleCollision={handleCollision} onScoreUpdate={handleScoreUpdate} isGameOver={isGameOver}>
+        {!isGameOver && <Goku isJumping={isJumping} handleCollision={handleCollision} />}
+      </Escenario>
+      
+      {isGameOver && (
+        <div className="game-over-overlay">
+          <div className="game-over-content">
+            <h1 className="game-over-text">¡Game Over!</h1>
+            <button className="restart-button">
               <Link to="/" style={{ color: '#ffff00', textDecoration: 'none' }}>Volver al inicio</Link>
             </button>
-          </Escenario>
+          </div>
         </div>
-      ) : (
-        <Escenario handleCollision={handleCollision} >
-          <Goku isJumping={isJumping} handleCollision={handleCollision} />
-        </Escenario>
       )}
     </div>
   );

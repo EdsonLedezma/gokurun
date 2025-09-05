@@ -1,76 +1,106 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './Escenario.css'; 
 import Cell from './Cell'; 
 import Roca from './Roca'; 
 import { useLocation } from 'react-router-dom';
 
-const Escenario = ({ children, handleCollision}) => {
+const Escenario = ({ children, handleCollision, onScoreUpdate, isGameOver}) => {
   const location = useLocation();
   const nombreJugador = location.state?.nombre || 'Anónimo';
-  const [obstaclePosition, setObstaclePosition] = useState(300); 
-  const [obstacleType, setObstacleType] = useState('Roca'); 
+  const [obstacles, setObstacles] = useState([]);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [animationSpeed, setAnimationSpeed] = useState(2);
   const [score, setScore] = useState(0);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const randomPosition = Math.floor(Math.random() * (window.innerHeight - 100));
-      const newObstacleType = Math.random() < 0.5 ? 'roca' : 'cell';
-      setObstaclePosition(randomPosition);
-      setObstacleType(newObstacleType);
-    }, 3500); 
+  
+  const gameLoopRef = useRef();
+  const lastObstacleTime = useRef(0);
+  const lastScoreTime = useRef(0);
+  const gameStartTime = useRef(0);
+  const obstacleIdCounter = useRef(0);
+  
+  // Calcular velocidad basada en el tiempo transcurrido
+  const gameSpeed = Math.min(1 + Math.floor(timeElapsed / 3), 3);
 
-    return () => clearInterval(interval);
-  }, []);
+  // Función optimizada para el game loop principal
+  const gameLoop = useCallback((timestamp) => {
+    // Pausar el game loop si el juego terminó
+    if (isGameOver) {
+      return;
+    }
 
-  useEffect(() => {
-    const timerInterval = setInterval(() => {
+    const currentTime = timestamp;
+
+    // Generar obstáculos cada 2 segundos (más simple)
+    if (currentTime - lastObstacleTime.current >= 2000) {
+      const newObstacle = {
+        id: obstacleIdCounter.current++,
+        type: Math.random() < 0.5 ? 'roca' : 'cell',
+        position: Math.random() < 0.5 ? 'ground' : 'air', // 50% suelo, 50% aire
+        speed: gameSpeed
+      };
+      
+      setObstacles(prev => [...prev, newObstacle]);
+      lastObstacleTime.current = currentTime;
+    }
+
+    // Actualizar puntaje cada segundo
+    if (currentTime - lastScoreTime.current >= 1000) {
       setTimeElapsed(prevTime => prevTime + 1);
-      setScore(prevScore => prevScore + 5);
-    }, 1000);
+      setScore(prevScore => {
+        const newScore = prevScore + 5;
+        if (onScoreUpdate) {
+          onScoreUpdate(newScore);
+        }
+        return newScore;
+      });
+      lastScoreTime.current = currentTime;
+    }
 
-    return () => clearInterval(timerInterval);
-  }, []);
+    // Limpiar obstáculos que salieron de pantalla
+    setObstacles(prev => prev.filter(obstacle => {
+      const obstacleElement = document.getElementById(`obstacle-${obstacle.id}`);
+      if (obstacleElement) {
+        const rect = obstacleElement.getBoundingClientRect();
+        return rect.right > -100; // Mantener un poco fuera de pantalla
+      }
+      return true;
+    }));
+
+    gameLoopRef.current = requestAnimationFrame(gameLoop);
+  }, [isGameOver]);
+
+  // Iniciar el game loop
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setAnimationSpeed(1.6); 
-    }, 10000); 
+    if (!isGameOver) {
+      // Solo establecer el tiempo de inicio si no está ya establecido
+      if (gameStartTime.current === 0) {
+        gameStartTime.current = Date.now();
+      }
+      lastObstacleTime.current = 0;
+      lastScoreTime.current = 0;
+      obstacleIdCounter.current = 0;
+      setObstacles([]);
+      setTimeElapsed(0);
+      setScore(0);
+      
+      gameLoopRef.current = requestAnimationFrame(gameLoop);
+    }
 
-    return () => clearTimeout(timeout);
-  }, []);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setAnimationSpeed(1.4); 
-    }, 20000); 
-
-    return () => clearTimeout(timeout);
-  }, []);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setAnimationSpeed(1.2); 
-    }, 30000); 
-
-    return () => clearTimeout(timeout);
-  }, []);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setAnimationSpeed(1); 
-    }, 40000); 
-
-    return () => clearTimeout(timeout);
-  }, []);
+    return () => {
+      if (gameLoopRef.current) {
+        cancelAnimationFrame(gameLoopRef.current);
+      }
+    };
+  }, [isGameOver]);
 
   
 
   return (
-    <div className="escenario">
-      <div className="info" style={{ marginTop: '150px' }}>
+    <div className={`escenario ${isGameOver ? 'game-over' : ''}`}>
+      <div className="info">
         <div>Nombre: {nombreJugador}</div>
         <div>Tiempo: {timeElapsed} seg</div>
         <div>Puntaje: {score}</div>
+        <div>Velocidad: x{Math.round(gameSpeed)}</div>
       </div>
       
       {children}
@@ -81,12 +111,47 @@ const Escenario = ({ children, handleCollision}) => {
           width: 200px;
           height: 150px;
           background-size: cover;
-          left: calc(100% - 50px);
-          animation: moveObstacle ${animationSpeed}s linear infinite; 
+          left: 100%;
+          animation: moveObstacle ${2 / gameSpeed}s linear forwards; 
+        }
+        .obstacle.ground {
+          bottom: 60px;
+        }
+        .obstacle.cell.ground {
+          bottom: 60px;
+        }
+        .obstacle.air {
+          bottom: 25vh;
+        }
+        @keyframes moveObstacle {
+          0% { 
+            left: 100%; 
+            transform: translateZ(0);
+          }
+          100% { 
+            left: -800px; 
+            transform: translateZ(0);
+          }
         }
       `}</style>
       
-      {obstacleType === 'cell' ? <Cell handleCollision={handleCollision} /> : <Roca handleCollision={handleCollision} />}
+      {!isGameOver && obstacles.map(obstacle => (
+        <div key={obstacle.id}>
+          {obstacle.type === 'cell' ? (
+            <Cell 
+              id={obstacle.id}
+              position={obstacle.position}
+              handleCollision={handleCollision} 
+            />
+          ) : (
+            <Roca 
+              id={obstacle.id}
+              position={obstacle.position}
+              handleCollision={handleCollision} 
+            />
+          )}
+        </div>
+      ))}
     </div>
   );
 };

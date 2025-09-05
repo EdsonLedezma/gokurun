@@ -1,34 +1,59 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-const Roca = ({ handleCollision }) => {
+const Roca = ({ id, position, handleCollision }) => {
+  const animationRef = useRef();
+  const lastCheckTime = useRef(0);
+
   useEffect(() => {
-    const checkCollision = () => {
-      const gokuElement = document.querySelector('.goku');
-      const rocaElement = document.querySelector('.roca');
+    const checkCollision = (timestamp) => {
+      // Verificar colisión cada 16ms (60 FPS) para mejor responsividad
+      if (timestamp - lastCheckTime.current >= 16) {
+        const gokuElement = document.querySelector('.goku');
+        const rocaElement = document.getElementById(`obstacle-${id}`);
 
-      if (gokuElement && rocaElement) {
-        const gokuRect = gokuElement.getBoundingClientRect();
-        const rocaRect = rocaElement.getBoundingClientRect();
+        if (gokuElement && rocaElement) {
+          const gokuRect = gokuElement.getBoundingClientRect();
+          const rocaRect = rocaElement.getBoundingClientRect();
 
-        const collisionMargin = 20; // Margen de colisión para ajustar el centro de Goku
+          // Colisión más realista - las imágenes deben superponerse más
+          const collisionMarginX = 20; // Más sensible para colisión
+          const collisionMarginY = 15; // Más sensible para colisión
 
-        if (
-          gokuRect.right - collisionMargin > rocaRect.left &&
-          gokuRect.left + collisionMargin < rocaRect.right &&
-          gokuRect.bottom - collisionMargin > rocaRect.top &&
-          gokuRect.top + collisionMargin < rocaRect.bottom
-        ) {
-          handleCollision(); // Llama a la función de colisión si hay colisión
+          if (
+            gokuRect.right - collisionMarginX > rocaRect.left &&
+            gokuRect.left + collisionMarginX < rocaRect.right &&
+            gokuRect.bottom - collisionMarginY > rocaRect.top &&
+            gokuRect.top + collisionMarginY < rocaRect.bottom
+          ) {
+            handleCollision(); // Llama a la función de colisión si hay colisión
+            return; // Salir del loop si hay colisión
+          }
         }
+        lastCheckTime.current = timestamp;
       }
+
+      animationRef.current = requestAnimationFrame(checkCollision);
     };
 
-    const collisionCheckInterval = setInterval(checkCollision, 20); // Verifica la colisión cada 50ms
+    animationRef.current = requestAnimationFrame(checkCollision);
 
-    return () => clearInterval(collisionCheckInterval);
-  }, [handleCollision]);
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [handleCollision, id]);
 
-  return <div className="obstacle roca" style={{ bottom: '150px', width: '200px', height: '150px' }}></div>;
+  return (
+    <div 
+      id={`obstacle-${id}`}
+      className={`obstacle roca ${position}`} 
+      style={{ 
+        width: '200px', 
+        height: '150px'
+      }}
+    />
+  );
 };
 
 export default Roca;

@@ -1,34 +1,59 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-const Cell = ({ handleCollision }) => {
+const Cell = ({ id, position, handleCollision }) => {
+  const animationRef = useRef();
+  const lastCheckTime = useRef(0);
+
   useEffect(() => {
-    const checkCollision = () => {
-      const gokuElement = document.querySelector('.goku');
-      const cellElement = document.querySelector('.cell');
+    const checkCollision = (timestamp) => {
+      // Verificar colisión cada 16ms (60 FPS) para mejor responsividad
+      if (timestamp - lastCheckTime.current >= 16) {
+        const gokuElement = document.querySelector('.goku');
+        const cellElement = document.getElementById(`obstacle-${id}`);
 
-      if (gokuElement && cellElement) {
-        const gokuRect = gokuElement.getBoundingClientRect();
-        const cellRect = cellElement.getBoundingClientRect();
+        if (gokuElement && cellElement) {
+          const gokuRect = gokuElement.getBoundingClientRect();
+          const cellRect = cellElement.getBoundingClientRect();
 
-        const collisionMargin = 35; // Margen de colisión para ajustar el centro de Goku
+          // Colisión más realista - las imágenes deben superponerse más
+          const collisionMarginX = 20; // Más sensible para colisión
+          const collisionMarginY = 15; // Más sensible para colisión
 
-        if (
-          gokuRect.right - collisionMargin > cellRect.left &&
-          gokuRect.left + collisionMargin < cellRect.right &&
-          gokuRect.bottom - collisionMargin > cellRect.top &&
-          gokuRect.top + collisionMargin < cellRect.bottom
-        ) {
-          handleCollision(); 
+          if (
+            gokuRect.right - collisionMarginX > cellRect.left &&
+            gokuRect.left + collisionMarginX < cellRect.right &&
+            gokuRect.bottom - collisionMarginY > cellRect.top &&
+            gokuRect.top + collisionMarginY < cellRect.bottom
+          ) {
+            handleCollision(); 
+            return; // Salir del loop si hay colisión
+          }
         }
+        lastCheckTime.current = timestamp;
       }
+
+      animationRef.current = requestAnimationFrame(checkCollision);
     };
 
-    const collisionCheckInterval = setInterval(checkCollision, 50); // Verifica la colisión cada 50ms
+    animationRef.current = requestAnimationFrame(checkCollision);
 
-    return () => clearInterval(collisionCheckInterval);
-  }, [handleCollision]);
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [handleCollision, id]);
 
-  return <div className="obstacle cell" style={{ bottom: '160px', width: '120px' ,height: '150px' }}></div>;
+  return (
+    <div 
+      id={`obstacle-${id}`}
+      className={`obstacle cell ${position}`} 
+      style={{ 
+        width: '120px',
+        height: '150px'
+      }}
+    />
+  );
 };
 
 export default Cell;
