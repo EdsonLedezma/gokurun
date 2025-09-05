@@ -2,6 +2,7 @@
   position: relative;
   width: 100vw;
   height: 100vh; /* Altura completa de la ventana */
+  height: 100dvh; /* Dynamic viewport height para móviles */
   overflow: hidden; /* Oculta las partes del fondo que se cortan */
   background-image: url('escenario.png'); 
   background-size: auto 100%; /* Ajusta la imagen de fondo para que cubra toda la altura del escenario */
@@ -9,6 +10,9 @@
   animation: moveBackground 10s linear infinite;/* Animación más lenta para evitar flasheo */
   will-change: background-position; /* Optimización para GPU */
   transform: translateZ(0); /* Forzar aceleración por hardware */
+  /* Fix para móviles */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
 }
 
 .escenario.game-over {
@@ -72,11 +76,15 @@
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh; /* Dynamic viewport height para móviles */
   background-color: rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  /* Fix para móviles */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
 }
 
 .game-over-content {

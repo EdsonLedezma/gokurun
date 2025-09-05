@@ -10,16 +10,21 @@ html, body {
   overflow: hidden; /* Eliminar scroll */
   margin: 0;
   padding: 0;
+  /* Fix para móviles */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
 }
 
 #root {
   height: 100vh;
+  height: 100dvh; /* Dynamic viewport height para móviles */
   width: 100vw;
   overflow: hidden;
 }
 
 .App {
   height: 100vh;
+  height: 100dvh; /* Dynamic viewport height para móviles */
   width: 100vw;
   overflow: hidden;
 }
