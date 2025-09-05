@@ -19,7 +19,7 @@ const Goku = () => {
   
   useEffect(() => {
     if (isJumping) {
-      setJumpHeight(270);
+      setJumpHeight(470);
       const jumpInterval = setInterval(() => {
         setJumpHeight(prevHeight => {
           if (prevHeight > 0) {
